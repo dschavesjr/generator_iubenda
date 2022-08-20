@@ -55,7 +55,7 @@ end
 class Section
     attr_reader :id, :clauses_ids
 
-    def initialize(id, *clauses_ids)
+    def initialize(id, clauses_ids)
         @id = id
         @clauses_ids = clauses_ids
     end
@@ -64,9 +64,10 @@ class Section
         DatasetLoader.new(SectionFileParser.new).load_dataset().each do |attributes|
             if attributes['id'] == id
                 @section = new(attributes['id'], attributes['clauses_ids'])
+                return @section
             end
         end
-        return @section
+        return nil
     end
 end
 
@@ -75,31 +76,72 @@ class Clause
 
     def initialize(id, text)
         @id = id
-        @clauses_ids = clauses_ids
+        @text = text
     end
 
     def self.find(id)
         DatasetLoader.new(ClauseFileParser.new).load_dataset().each do |attributes|
             if attributes['id'] == id
                 @clause = new(attributes['id'], attributes['text'])
+                return @clause
             end
         end
-        return @clause
+        return nil
     end
 end
 
 class Template
     attr_reader :text
 
-    def initialize (template)
-        @text = TemplateLoader.load(template)
+    def initialize (name)
+        @text = TemplateLoader.load(name)
+    end
+
+    def find_clauses_ids
+        clauses_ids = @text.enum_for(:scan, /\[CLAUSE\-\d+\]/).map do |tag|
+            tag.scan(/\d+/)[0]
+        end.uniq
+    end
+
+    def find_sections_ids
+        section_ids = @text.enum_for(:scan, /\[SECTION\-\d+\]/).map do |tag|
+            tag.scan(/\d+/)[0]
+        end.uniq
     end
 end
 
 class Generator
+    def generate_document(template)
+        @document = template.text
+        replace_clauses_tags(template.find_clauses_ids) 
+        replace_sections_tags(template.find_sections_ids)
+        @document
+    end
 
+    private
+
+    def replace_clauses_tags(clauses_ids)
+        clauses_ids.each do |id|
+            clause = Clause.find(id.to_i)
+            @document = @document.gsub!('[CLAUSE-'+id+']',  clause.text) unless clause.nil?
+        end
+    end
+
+    def replace_sections_tags(section_ids)
+        section_ids.each do |id|
+            section = Section.find(id.to_i)
+            unless section.nil?
+                text = ''
+                section.clauses_ids.each do |id|
+                    clause = Clause.find(id)
+                    text = text + clause.text + ';'
+                end 
+                @document = @document.gsub!('[SECTION-'+id+']',  text.chop)
+            end
+        end
+    end
 end
 
 puts 'Enter with template file name (example.txt):'
-template = Template.new(gets.chomp)
-#puts Generator.create_document(template)
+template = Template.new('example.txt')
+puts Generator.new().generate_document(template)
