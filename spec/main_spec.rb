@@ -36,7 +36,7 @@ describe Template do
     end
 
     context 'Try init a template that NOT exist in DataSource' do
-        it 'is nil' do
+        it 'raise a invalid template reference error' do
             #
         end
     end
@@ -73,7 +73,7 @@ describe Generator do
         end
     end
 
-    context 'Try generate a Document from other object (nil or anything)' do
+    context 'Try generate a Document from a invalid template or other object' do
         it 'is nil' do
             #
         end

@@ -29,6 +29,8 @@ class TemplateFileParser < FileParser
     attr_accessor :filename
 
     def parse
+        return nil unless File.file?('./templates/'+@filename)
+
         file = File.read('./templates/'+@filename)
         return file
     end
@@ -111,11 +113,15 @@ class Template
             tag.scan(/\d+/)[0]
         end.uniq
     end
+
+    def valid?
+        @text.nil? ? false : true
+    end
 end
 
 class Generator
     def generate_document(template)
-        return nil unless template.is_a? Template
+        return nil unless template.valid?
         @document = template.text
         replace_clauses_tags(template.all_clauses_ids) 
         replace_sections_tags(template.all_sections_ids)
@@ -147,5 +153,5 @@ class Generator
 end
 
 puts 'Enter with template file name (example.txt):'
-template = Template.new('example.txt')
-puts Generator.new.generate_document(template)
+template = Template.new(gets.chomp)
+puts template.valid? ? Generator.new.generate_document(template) : 'Template not found'
