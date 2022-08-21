@@ -26,9 +26,7 @@ class ClauseFileParser < FileParser
 end
 
 class TemplateFileParser < FileParser
-    def initialize(filename)
-        @filename = filename
-    end
+    attr_accessor :filename
 
     def parse
         file = File.read('./templates/'+@filename)
@@ -47,8 +45,13 @@ class DatasetLoader
 end
 
 class TemplateLoader
-    def self.load(templatekey)
-        TemplateFileParser.new(templatekey).parse()
+    def initialize(templateparser)
+        @templateparser = templateparser
+    end
+    
+    def load(templatekey)
+        @templateparser.filename = templatekey
+        @templateparser.parse()
     end
 end
 
@@ -60,8 +63,8 @@ class Section
         @clauses_ids = clauses_ids
     end
 
-    def self.find(id)
-        DatasetLoader.new(SectionFileParser.new).load_dataset().each do |attributes|
+    def self.find(id, loader: DatasetLoader.new(SectionFileParser.new))
+        loader.load_dataset().each do |attributes|
             if attributes['id'] == id
                 @section = new(attributes['id'], attributes['clauses_ids'])
                 return @section
@@ -79,8 +82,8 @@ class Clause
         @text = text
     end
 
-    def self.find(id)
-        DatasetLoader.new(ClauseFileParser.new).load_dataset().each do |attributes|
+    def self.find(id, loader: DatasetLoader.new(ClauseFileParser.new))
+        loader.load_dataset().each do |attributes|
             if attributes['id'] == id
                 @clause = new(attributes['id'], attributes['text'])
                 return @clause
@@ -93,17 +96,17 @@ end
 class Template
     attr_reader :text
 
-    def initialize (name)
-        @text = TemplateLoader.load(name)
+    def initialize (name, loader: TemplateLoader.new(TemplateFileParser.new))
+        @text = loader.load(name)
     end
 
-    def find_clauses_ids
+    def all_clauses_ids
         clauses_ids = @text.enum_for(:scan, /\[CLAUSE\-\d+\]/).map do |tag|
             tag.scan(/\d+/)[0]
         end.uniq
     end
 
-    def find_sections_ids
+    def all_sections_ids
         section_ids = @text.enum_for(:scan, /\[SECTION\-\d+\]/).map do |tag|
             tag.scan(/\d+/)[0]
         end.uniq
@@ -113,8 +116,8 @@ end
 class Generator
     def generate_document(template)
         @document = template.text
-        replace_clauses_tags(template.find_clauses_ids) 
-        replace_sections_tags(template.find_sections_ids)
+        replace_clauses_tags(template.all_clauses_ids) 
+        replace_sections_tags(template.all_sections_ids)
         @document
     end
 
@@ -144,4 +147,4 @@ end
 
 puts 'Enter with template file name (example.txt):'
 template = Template.new('example.txt')
-puts Generator.new().generate_document(template)
+puts Generator.new.generate_document(template)
