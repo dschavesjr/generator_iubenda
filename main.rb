@@ -115,6 +115,7 @@ end
 
 class Generator
     def generate_document(template)
+        return nil unless template.is_a? Template
         @document = template.text
         replace_clauses_tags(template.all_clauses_ids) 
         replace_sections_tags(template.all_sections_ids)
