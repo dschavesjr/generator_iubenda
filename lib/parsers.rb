@@ -1,12 +1,12 @@
 require 'json'
 
-class FileParser
+class JsonFileParser
     def parse
         raise "NotImplemented"
     end
 end
 
-class SectionFileParser < FileParser
+class SectionFileParser < JsonFileParser
     def parse
         file = File.read('./datasets/sections.json')
         data_hash = JSON.parse(file)
@@ -14,7 +14,7 @@ class SectionFileParser < FileParser
     end
 end
 
-class ClauseFileParser < FileParser
+class ClauseFileParser < JsonFileParser
     def parse
         file = File.read('./datasets/clauses.json')
         data_hash = JSON.parse(file)
@@ -22,7 +22,7 @@ class ClauseFileParser < FileParser
     end
 end
 
-class TemplateFileParser < FileParser
+class TemplateFileParser
     attr_accessor :filename
 
     def parse
