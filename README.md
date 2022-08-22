@@ -1,7 +1,7 @@
 # generator_iubenda
 
 <h3>Set Up and Run the Application</h3>
-Certified to use Ruby 3.0.0
+Make sure use Ruby 3.0.0
 Execute: <b>bundle install</b> to install rspec gem
 Execute: <b>ruby main.rb</b>
 Type the filename of a template and app will put the document on terminal (You can type example.txt to generate document from default template)
