@@ -8,18 +8,6 @@ class Template
         @text = loader.load(name)
     end
 
-    def all_clauses_ids
-        clauses_ids = @text.enum_for(:scan, /\[CLAUSE\-\d+\]/).map do |tag|
-            tag.scan(/\d+/)[0].to_i
-        end.uniq
-    end
-
-    def all_sections_ids
-        section_ids = @text.enum_for(:scan, /\[SECTION\-\d+\]/).map do |tag|
-            tag.scan(/\d+/)[0].to_i
-        end.uniq
-    end
-
     def valid?
         @text.nil? ? false : true
     end
