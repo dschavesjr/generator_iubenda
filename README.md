@@ -26,10 +26,3 @@ This class works as an interface. We have two classes with the same method and s
 <h4>Search of Tags</h4>
 All tags are found using regex scan. It's to be more fast and guarantee all of tags will be found.
   
-<h3>Time Spent, Future Updates and Final Considerations</h3>
-It's really hard to say how many time the application took, because it was developmented on weekend with alot of intervals (go to restaurant, mall, church and take care my sons). But I estimate between 5 and 6 hours.
-  
-If I have more time, I would create a web application with CRUD to Sections, Clauses and Templates. A document class and create the document to download as a PDF.
-  
-As a final consideration I want to say that I had never tried to use rspec with pure ruby (without rails). I had to study to understand how the setup would be, but I discovered that it is actually quite simple. :)
-  
