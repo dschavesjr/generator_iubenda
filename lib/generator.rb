@@ -12,26 +12,26 @@ class Generator
         replace_tags()
     end
 
-    def all_clauses_ids(template_text)
-        clauses_ids = template_text.scan(/\[CLAUSE\-\d+\]/).map do |tag|
-            tag.scan(/\d+/)[0].to_i
-        end.uniq
-    end
-
-    def all_sections_ids(template_text)
-        section_ids = template_text.scan(/\[SECTION\-\d+\]/).map do |tag|
-            tag.scan(/\d+/)[0].to_i
-        end.uniq
-    end
-
     private
 
+    def all_clauses_ids
+        clauses_ids = @text_to_document.scan(/\[CLAUSE\-\d+\]/).map do |tag|
+            tag.scan(/\d+/)[0].to_i
+        end.uniq
+    end
+
+    def all_sections_ids
+        section_ids = @text_to_document.scan(/\[SECTION\-\d+\]/).map do |tag|
+            tag.scan(/\d+/)[0].to_i
+        end.uniq
+    end
+
     def replace_tags()
-        sections = Section.find_all(all_sections_ids(@text_to_document))
+        sections = Section.find(all_sections_ids)
         sections.each do |section|
             @text_to_document = @text_to_document.gsub('[SECTION-'+section.id.to_s+']',  section.clauses_ids.map{|clause_id| '[CLAUSE-'+clause_id.to_s+']'}.join(';'))
         end
-        clauses = Clause.find_all(all_clauses_ids(@text_to_document))
+        clauses = Clause.find(all_clauses_ids)
         clauses.each do |clause|
             @text_to_document = @text_to_document.gsub('[CLAUSE-'+clause.id.to_s+']',  clause.text)
         end

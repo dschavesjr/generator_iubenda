@@ -9,7 +9,7 @@ class Section
         @clauses_ids = clauses_ids
     end
 
-    def self.find_all(ids, loader: DatasetLoader.new(SectionFileParser.new))
+    def self.find(ids, loader: DatasetLoader.new(SectionFileParser.new))
         @sections = []
         loader.load_dataset().each do |attributes|
             if ids.include? attributes['id']

@@ -9,7 +9,7 @@ class Clause
         @text = text
     end
 
-    def self.find_all(ids, loader: DatasetLoader.new(ClauseFileParser.new))
+    def self.find(ids, loader: DatasetLoader.new(ClauseFileParser.new))
         @clauses = []
         loader.load_dataset().each do |attributes|
             if ids.include? attributes['id']

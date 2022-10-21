@@ -3,9 +3,8 @@ require 'generator'
 describe Generator do
     context 'Generate a Document from a valid Template' do
         before do
-            allow(Clause).to receive(:find).with(1) { Clause.new(1, 'is ok') }
-            allow(Clause).to receive(:find).with(2) { Clause.new(2, 'too') }
-            allow(Section).to receive(:find).with(1) { Section.new(1, [1,2]) }
+            allow(Clause).to receive(:find).with([1,2]) { [Clause.new(1, 'is ok'), Clause.new(2, 'too')] }
+            allow(Section).to receive(:find).with([1]) { [Section.new(1, [1,2])] }
 
             @loader = TemplateLoader.new(TemplateFileParser.new)
             allow(@loader).to receive(:load).with('test') { 'The test [CLAUSE-1] with clause and [SECTION-1] with section' }
