@@ -9,10 +9,10 @@ class Clause
         @text = text
     end
 
-    def self.find_all(id, loader: DatasetLoader.new(ClauseFileParser.new))
+    def self.find_all(ids, loader: DatasetLoader.new(ClauseFileParser.new))
         @clauses = []
         loader.load_dataset().each do |attributes|
-            if id.include? attributes['id']
+            if ids.include? attributes['id']
                 @clauses << new(attributes['id'], attributes['text'])
             end
         end

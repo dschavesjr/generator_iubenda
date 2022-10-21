@@ -7,19 +7,19 @@ class Generator
         return nil unless template.is_a? Template
         return nil unless template.valid?
 
-        @template_text = template.send(:text)
+        @text_to_document = template.text
 
         replace_tags()
     end
 
     def all_clauses_ids(template_text)
-        clauses_ids = template_text.enum_for(:scan, /\[CLAUSE\-\d+\]/).map do |tag|
+        clauses_ids = template_text.scan(/\[CLAUSE\-\d+\]/).map do |tag|
             tag.scan(/\d+/)[0].to_i
         end.uniq
     end
 
     def all_sections_ids(template_text)
-        section_ids = template_text.enum_for(:scan, /\[SECTION\-\d+\]/).map do |tag|
+        section_ids = template_text.scan(/\[SECTION\-\d+\]/).map do |tag|
             tag.scan(/\d+/)[0].to_i
         end.uniq
     end
@@ -27,16 +27,14 @@ class Generator
     private
 
     def replace_tags()
-        section_ids = all_sections_ids(@template_text)
-        sections = Section.find_all(section_ids)
+        sections = Section.find_all(all_sections_ids(@text_to_document))
         sections.each do |section|
-            @template_text = @template_text.gsub!('[SECTION-'+section.id.to_s+']',  section.clauses_ids.map{|clause_id| '[CLAUSE-'+clause_id.to_s+']'}.join(';'))
+            @text_to_document = @text_to_document.gsub('[SECTION-'+section.id.to_s+']',  section.clauses_ids.map{|clause_id| '[CLAUSE-'+clause_id.to_s+']'}.join(';'))
         end
-        clauses_ids = all_clauses_ids(@template_text)
-        clauses = Clause.find_all(clauses_ids)
+        clauses = Clause.find_all(all_clauses_ids(@text_to_document))
         clauses.each do |clause|
-            @template_text = @template_text.gsub!('[CLAUSE-'+clause.id.to_s+']',  clause.text)
+            @text_to_document = @text_to_document.gsub('[CLAUSE-'+clause.id.to_s+']',  clause.text)
         end
-        @template_text
+        @text_to_document
     end
 end

@@ -7,18 +7,20 @@ class JsonFileParser
 end
 
 class SectionFileParser < JsonFileParser
+    @@data_hash = nil
     def parse
         file = File.read('./datasets/sections.json')
-        data_hash = JSON.parse(file)
-        return data_hash
+        @@data_hash = JSON.parse(file) if @@data_hash.nil?
+        return @@data_hash
     end
 end
 
 class ClauseFileParser < JsonFileParser
+    @@data_hash = nil
     def parse
         file = File.read('./datasets/clauses.json')
-        data_hash = JSON.parse(file)
-        return data_hash
+        @@data_hash = JSON.parse(file) if @@data_hash.nil?
+        return @@data_hash
     end
 end
 

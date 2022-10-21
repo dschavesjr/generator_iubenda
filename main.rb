@@ -4,8 +4,6 @@
 require_relative 'lib/template'
 require_relative 'lib/generator'
 
-puts 'Enter with template file name ():'
-#template = Template.new(gets.chomp)
-template = Template.new('example.txt')
+puts 'Enter with template file name (example.txt, example2.txt):'
+template = Template.new(gets.chomp)
 puts template.valid? ? Generator.new.generate_document(template) : 'Template not found'
-puts template.text
